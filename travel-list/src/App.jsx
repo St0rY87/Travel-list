@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
   { id: 2, description: "Socks", quantity: 12, packed: false },
@@ -5,11 +7,12 @@ const initialItems = [
 ];
 
 export default function App() {
+  const [items, setItems] = useState(initialItems);
   return (
     <div className="app">
       <Logo />
-      <Form />
-      <PackingList />
+      <Form items={items} setItems={setItems} />
+      <PackingList items={items} />
       <Stats />
     </div>
   );
@@ -18,22 +21,48 @@ export default function App() {
 function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
-function Form() {
+
+function Form({ setItems, items }) {
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState(1);
+
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (!description) return;
+    const newItem = {
+      id: Date.now(),
+      isPacked: false,
+      description,
+      quantity,
+    };
+    console.log(newItem);
+    setItems([...items, newItem]);
+    setDescription("");
+    setQuantity(1);
   }
 
   return (
     <form onSubmit={handleSubmit} className="add-form">
       <h3>What do you need for your 😍 trip ?</h3>
-      <select>
+      <select
+        onChange={(e) => setQuantity(Number(e.target.value))}
+        value={quantity}
+      >
         {Array.from({ length: 20 }, (elem, index) => index + 1).map((num) => (
           <option value={num} key={num}>
             {num}
           </option>
         ))}
       </select>
-      <input type="text" placeholder="Item..." />
+      <input
+        type="text"
+        placeholder="Item..."
+        value={description}
+        onChange={(e) => {
+          setDescription(e.target.value);
+        }}
+      />
       <button>add</button>
     </form>
   );
@@ -49,11 +78,11 @@ function Item({ item }) {
   );
 }
 
-function PackingList() {
+function PackingList({ items }) {
   return (
     <div className="list">
       <ul>
-        {initialItems.map((item) => (
+        {items.map((item) => (
           <Item item={item} key={item.id} />
         ))}
       </ul>
@@ -63,7 +92,7 @@ function PackingList() {
 function Stats() {
   return (
     <footer className="stats">
-      <em>💼 You have X itemson your list and you already packed X (X%)</em>
+      <em>💼 You have X items on your list and you already packed X (X%)</em>
     </footer>
   );
 }
