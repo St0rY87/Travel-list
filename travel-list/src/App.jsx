@@ -27,7 +27,7 @@ function Form() {
 }
 function Item({ item }) {
   return (
-    <li key={item.id}>
+    <li>
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
@@ -41,8 +41,7 @@ function PackingList() {
     <div className="list">
       <ul>
         {initialItems.map((item) => (
-          <Item item={item} />
-          // <li key={item.id}>{item.description}</li>
+          <Item item={item} key={item.id} />
         ))}
       </ul>
     </div>
