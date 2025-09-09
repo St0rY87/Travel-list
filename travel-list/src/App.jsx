@@ -1,3 +1,4 @@
+import { use } from "react";
 import { useState } from "react";
 
 export default function App() {
@@ -11,11 +12,25 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleToggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, isPacked: !item.isPacked } : item
+      )
+    );
+
+    console.log(items);
+  }
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList items={items} onDeleteItem={handleDeleteItem} />
+      <PackingList
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        onToggleItem={handleToggleItem}
+      />
       <Stats />
     </div>
   );
@@ -70,10 +85,35 @@ function Form({ onAddItems }) {
     </form>
   );
 }
-function Item({ item, onDeleteItem }) {
+
+function PackingList({ items, onDeleteItem, onToggleItem }) {
+  return (
+    <div className="list">
+      <ul>
+        {items.map((item) => (
+          <Item
+            item={item}
+            key={item.id}
+            onDeleteItem={onDeleteItem}
+            onToggleItem={onToggleItem}
+          />
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
-      <span style={item.packed ? { textDecoration: "line-through" } : {}}>
+      <input
+        type="checkbox"
+        value={item.isPacked}
+        onChange={() => {
+          onToggleItem(item.id);
+        }}
+      />
+      <span style={item.isPacked ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
       <button onClick={() => onDeleteItem(item.id)}>❌</button>
@@ -81,17 +121,6 @@ function Item({ item, onDeleteItem }) {
   );
 }
 
-function PackingList({ items, onDeleteItem }) {
-  return (
-    <div className="list">
-      <ul>
-        {items.map((item) => (
-          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
-        ))}
-      </ul>
-    </div>
-  );
-}
 function Stats() {
   return (
     <footer className="stats">
