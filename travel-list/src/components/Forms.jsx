@@ -14,7 +14,6 @@ export default function Form({ onAddItems }) {
       description,
       quantity,
     };
-    console.log(newItem);
     onAddItems(newItem);
     setDescription("");
     setQuantity(1);

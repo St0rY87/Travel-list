@@ -22,7 +22,6 @@ export default function App() {
       )
     );
 
-    console.log(items);
   }
 
   function handleClearList() {
